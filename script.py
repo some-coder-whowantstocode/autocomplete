@@ -1,4 +1,8 @@
 import socket
+import json
+
+from api.autocomplete import addWord, completeWord
+from middleware.parseBody import parseBody
 
 HOST = '127.0.0.1'
 PORT = 8000
@@ -46,10 +50,32 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             conn.sendall(response.encode())
 
                     if path == "/style.css":
-                        with open("static/style.css") as file:
+                        with open("static/index.css") as file:
                             content = file.read()
                             response = fileResp(content, 'text/css')
                             conn.sendall(response.encode())
+                elif method == "POST":
+                    responsebody = {"msg":"","status":200, "data":""}
+                    body = parseBody(rawRequest)
+                    if body is None:
+                        responsebody["msg"] = "body is required"
+                        responsebody["status"] = 400
+                    
+                    if path == "/addWord":
+                        responsebody["msg"] = "word added successfully"
+                        responsebody["status"] = 200
+                        addWord(body)
+                        responsebody = json.dumps(responsebody)
+                        response = fileResp(responsebody, "application/json")
+                        conn.sendall(response.encode())
+
+                    if path == "/completeWord":
+                        responsebody["msg"] = "word completed successfully"
+                        responsebody["status"] = 200
+                        responsebody["data"] = completeWord(body)
+                        responsebody = json.dumps(responsebody)
+                        response = fileResp(responsebody, "application/json")
+                        conn.sendall(response.encode())    
 
             except IndexError:
                 print("haah what to say lol")

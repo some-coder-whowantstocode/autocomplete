@@ -49,7 +49,7 @@ class Trie:
         node = self._traverse(prefix) 
         results = []
         self._dfs(node,prefix, results)
-        print(results)
+        return results
         
     def _traverse(self, word):
         node = self.root
