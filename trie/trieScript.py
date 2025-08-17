@@ -32,17 +32,20 @@ class Trie:
     def insert(self, word):
         node = self.root
         elem = None
+        same = True
         # check if it exists in the trie
         for ch in word:
             elem = next((obj for obj in node.nodes if obj.ch == ch) , None)
             if elem is None or elem.is_end is True :
                 # store it in trie
+                same = False
                 newnode = Node(ch, True)
                 node.nodes.append(newnode)
                 elem = newnode
             node = elem.next
-        newnode = Node("", False)
-        elem.next.nodes.append(newnode)
+        if not same or (same and not elem.is_end) :
+            newnode = Node("", False)
+            elem.next.nodes.append(newnode)
         return node
     
     def autocomplete(self, prefix):
